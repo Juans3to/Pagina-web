@@ -2,8 +2,8 @@ const mysql = require('mysql2/promise');
 
 const connection = mysql.createPool({
     host: 'localhost',
-    user: 'Juans3to',
-    password: 'juan.torres_p',
+    user: 'Juans3to', // --> Usuario acá
+    password: '', // --> Contraseña del MySQL acá
     database: 'autosusados'
 });
 async function obtenerProductos() {

@@ -20,38 +20,76 @@
                     <th>Estado</th>
                     <th>KM</th>
                     <th>Precio(USD)</th>
-                    <th>MSRP</th>
+                    <th>MSRP / Price drop</th>
                 </tr>
             </thead>
             <tbody id="productos-table-body"></tbody>
         </table>
+
+        <!-- Paginación -->
+        <div class="d-flex justify-content-center align-items-center gap-3">
+            <button id="prevBtn" class="btn btn-dark">Anterior</button>
+            <span id="pageInfo"></span>
+            <button id="nextBtn" class="btn btn-dark">Siguiente</button>
+        </div>
+
         <div class="text-center mt-4">
             <a href="index.html" class="btn btn-secondary">Volver</a>
         </div>
     </div>
 
     <script>
-        fetch('http://localhost:3000/api/autos')
-            .then(response => response.json())
-            .then(data => {
+        let currentPage = 1;
+        const limit = 15;
+
+        async function cargarAutos(page = 1) {
+            try {
+                const response = await fetch(`http://localhost:3000/api/autos?page=${page}&limit=${limit}`);
+                const data = await response.json();
+
+                // limpiar tabla
                 const tableBody = document.getElementById('productos-table-body');
-                data.forEach(autos => {
+                tableBody.innerHTML = "";
+
+                // recorrer autos
+                data.autos.forEach(auto => {
                     const row = document.createElement('tr');
-                    row.innerHTML = ` 
-                        <td>${autos.id_auto}</td> 
-                        <td>${autos.Modelo}</td> 
-                        <td>${autos.Anio}</td> 
-                        <td>$${autos.Estado}</td> 
-                        <td>${autos.Km}</td> 
-                        <td>${autos.Precio_en_dolares}</td>
-                        <td>${autos.MSRP}</td>
-                        `;
+                    row.innerHTML = `
+                        <td>${auto.id_auto}</td>
+                        <td>${auto.Modelo}</td>
+                        <td>${auto.Anio}</td>
+                        <td>${auto.Estado}</td>
+                        <td>${auto.Km}</td>
+                        <td>${auto.Precio_en_dolares}</td>
+                        <td>${auto.MSRP}</td>
+                    `;
                     tableBody.appendChild(row);
                 });
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            }); 
+
+                // actualizar info paginación
+                currentPage = data.page;
+                document.getElementById("pageInfo").textContent =
+                    `Página ${data.page} de ${data.totalPages}`;
+
+                document.getElementById("prevBtn").disabled = (data.page === 1);
+                document.getElementById("nextBtn").disabled = (data.page === data.totalPages);
+
+            } catch (err) {
+                console.error("Error cargando autos:", err);
+            }
+        }
+
+        // eventos botones
+        document.getElementById("prevBtn").addEventListener("click", () => {
+            if (currentPage > 1) cargarAutos(currentPage - 1);
+        });
+
+        document.getElementById("nextBtn").addEventListener("click", () => {
+            cargarAutos(currentPage + 1);
+        });
+
+        // cargar primera página
+        cargarAutos();
     </script>
 </body>
 

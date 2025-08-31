@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Catalogo 📖</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Lista de carros</h2>
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Modelo</th>
+                    <th>Año</th>
+                    <th>Estado</th>
+                    <th>KM</th>
+                    <th>Precio(USD)</th>
+                    <th>MSRP</th>
+                </tr>
+            </thead>
+            <tbody id="productos-table-body"></tbody>
+        </table>
+        <div class="text-center mt-4">
+            <a href="index.html" class="btn btn-secondary">Volver</a>
+        </div>
+    </div>
+
+    <script>
+        fetch('http://localhost:3000/api/autos')
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById('productos-table-body');
+                data.forEach(autos => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = ` 
+                        <td>${autos.id_auto}</td> 
+                        <td>${autos.Modelo}</td> 
+                        <td>${autos.Anio}</td> 
+                        <td>$${autos.Estado}</td> 
+                        <td>${autos.Km}</td> 
+                        <td>${autos.Precio_en_dolares}</td>
+                        <td>${autos.MSRP}</td>
+                        `;
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            }); 
+    </script>
+</body>
+
+</html>
